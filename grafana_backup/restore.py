@@ -17,6 +17,7 @@ from grafana_backup.update_notification_policy import main as update_notificatio
 from grafana_backup.s3_download import main as s3_download
 from grafana_backup.azure_storage_download import main as azure_storage_download
 from grafana_backup.gcs_download import main as gcs_download
+from grafana_backup.git_download import main as git_download
 from glob import glob
 import sys
 import tarfile
@@ -40,6 +41,7 @@ def main(args, settings):
     aws_s3_bucket_name = settings.get('AWS_S3_BUCKET_NAME')
     azure_storage_container_name = settings.get('AZURE_STORAGE_CONTAINER_NAME')
     gcs_bucket_name = settings.get('GCS_BUCKET_NAME')
+    git_repo_name = settings.get('GIT_REPO_URL')
 
     (status, json_resp, dashboard_uid_support, datasource_uid_support,
      paging_support, contact_point_support) = api_checks(settings)
@@ -64,6 +66,11 @@ def main(args, settings):
         print('Download archives from GCS:')
         gcs_storage_data = gcs_download(args, settings)
         tar = open_compressed_backup(gcs_storage_data)
+    
+    elif git_repo_name:
+        print('Download archives from Git:')
+        git_storage_data = git_download(args, settings)
+        tar = open_compressed_backup(git_storage_data)
 
     else:
         try:

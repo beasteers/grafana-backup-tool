@@ -10,6 +10,7 @@ requires = [
     'boto3',
     'azure-storage-blob',
     'google-cloud-storage',
+    'GitPython',
     'influxdb',
     'packaging'
 ]

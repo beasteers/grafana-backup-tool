@@ -1,3 +1,4 @@
+import shutil
 from grafana_backup.api_checks import main as api_checks
 from grafana_backup.save_alert_rules import main as save_alert_rules
 from grafana_backup.save_dashboards import main as save_dashboards
@@ -11,6 +12,8 @@ from grafana_backup.save_contact_points import main as save_contact_points
 from grafana_backup.save_notification_policies import main as save_notification_policies
 from grafana_backup.archive import main as archive
 from grafana_backup.s3_upload import main as s3_upload
+from grafana_backup.git_upload import main as git_initialize
+from grafana_backup.git_upload import main as git_upload
 from grafana_backup.influx import main as influx
 from grafana_backup.save_orgs import main as save_orgs
 from grafana_backup.save_users import main as save_users
@@ -62,6 +65,12 @@ def main(args, settings):
         print("grafana server status is not ok: {0}".format(json_resp))
         sys.exit(1)
 
+    git_repo_name = settings.get('GIT_REPO_URL')
+    if git_repo_name:
+        arg_no_archive = True
+        print('Initializing git repo:')
+        git_initialize(args, settings)
+
     if arg_components:
         arg_components_list = arg_components.replace("_", "-").split(',')
 
@@ -80,6 +89,10 @@ def main(args, settings):
 
     if not arg_no_archive:
         archive(args, settings)
+
+    if git_repo_name:
+        print('Upload archives to git:')
+        git_upload(args, settings)
 
     if aws_s3_bucket_name:
         print('Upload archives to S3:')

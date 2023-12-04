@@ -44,6 +44,9 @@ def main(config_path):
     gcp_config = config.get('gcp', {})
     gcs_bucket_name = gcp_config.get('gcs_bucket_name', '')
     google_application_credentials = gcp_config.get('google_application_credentials', '')
+    # Cloud storage settings - Github
+    git_repo_url = config.get('git', {}).get('repo_url', None)
+    git_repo_ref = config.get('git', {}).get('repo_ref', None)
 
     influxdb_measurement = config.get('influxdb', {}).get('measurement', 'grafana_backup')
     influxdb_host = config.get('influxdb', {}).get('host', '')
@@ -81,6 +84,9 @@ def main(config_path):
     INFLUXDB_USERNAME = os.getenv('INFLUXDB_USERNAME', influxdb_username)
     INFLUXDB_PASSWORD = os.getenv('INFLUXDB_PASSWORD', influxdb_password)
     INFLUXDB_DATABASE = os.getenv('INFLUXDB_DATABASE', influxdb_database)
+
+    GIT_REPO_URL = os.getenv('GIT_REPO_URL', git_repo_url)
+    GIT_REPO_REF = os.getenv('GIT_REPO_REF', git_repo_ref)
 
     ADMIN_ACCOUNT = os.getenv('GRAFANA_ADMIN_ACCOUNT', admin_account)
     ADMIN_PASSWORD = os.getenv('GRAFANA_ADMIN_PASSWORD', admin_password)
@@ -183,5 +189,7 @@ def main(config_path):
     config_dict['INFLUXDB_USERNAME'] = INFLUXDB_USERNAME
     config_dict['INFLUXDB_PASSWORD'] = INFLUXDB_PASSWORD
     config_dict['INFLUXDB_DATABASE'] = INFLUXDB_DATABASE
+    config_dict['GIT_REPO_URL'] = GIT_REPO_URL
+    config_dict['GIT_REPO_REF'] = GIT_REPO_REF
 
     return config_dict
